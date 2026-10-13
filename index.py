@@ -30,8 +30,6 @@ def get_batch(split):
     y = torch.stack([data[ix+i+1] for i in range(block_size)])
     return x , y
 
-xb , yb = get_batch('train')
-
 class BigramLanguageModel(nn.Module):
     def __init__(self,vocab_size):
         super().__init__()
@@ -62,7 +60,6 @@ class BigramLanguageModel(nn.Module):
 
 model = BigramLanguageModel(vocab_size)
 
-
 optimzer = torch.optim.AdamW(model.parameters(),lr=1e-3)
 
 for i in range(10000):
@@ -72,5 +69,5 @@ for i in range(10000):
     loss.backward()
     optimzer.step()
 
-print('loss', loss.item())
-print(decode(model.generate(idx= torch.zeros((1,1),dtype=torch.long),max_token_count=100)[0].tolist()))
+context = torch.zeros((1,1),dtype=torch.long)
+print(decode(model.generate(idx= context,max_token_count=100)[0].tolist()))
