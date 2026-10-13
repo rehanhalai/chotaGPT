@@ -20,7 +20,7 @@ train_data = full_data[:n]
 val_data = full_data[n:]
 
 block_size = 4
-batch_size = 8
+batch_size = 32
 vocab_size = len(chars)
 
 def get_batch(split):
@@ -61,11 +61,16 @@ class BigramLanguageModel(nn.Module):
 
 
 model = BigramLanguageModel(vocab_size)
-logits , loss = model(xb,yb)
 
-print('logits shape',logits.shape)
-print('loss',loss)
 
-print('--------------------------')
+optimzer = torch.optim.AdamW(model.parameters(),lr=1e-3)
 
+for i in range(10000):
+    xb,yb = get_batch('train')
+    logits , loss = model(xb,yb)
+    optimzer.zero_grad(set_to_none=True)
+    loss.backward()
+    optimzer.step()
+
+print('loss', loss.item())
 print(decode(model.generate(idx= torch.zeros((1,1),dtype=torch.long),max_token_count=100)[0].tolist()))
