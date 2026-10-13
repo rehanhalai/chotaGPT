@@ -35,12 +35,15 @@ class BigramLanguageModel(nn.Module):
     def __init__(self):
         super().__init__()
         self.token_embedding_table = nn.Embedding(vocab_size, num_embedding)
+        self.positon_embedding_table = nn.Embedding(block_size,num_embedding)
         self.lm_head = nn.Linear(num_embedding,vocab_size)
     
     def forward(self, idx, target=None):
         
         token_emb = self.token_embedding_table(idx)
-        logits = self.lm_head(token_emb)
+        pos_emb = self.positon_embedding_table(idx)
+        x = token_emb + pos_emb
+        logits = self.lm_head(x)
     
         if target is None:
             loss = None
